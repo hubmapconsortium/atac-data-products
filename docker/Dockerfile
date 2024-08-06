@@ -26,15 +26,12 @@ RUN apt-get update \
  && rm -rf /var/cache/apt/*
 
 ## Python packages
-COPY docker/python/requirements.txt /opt/requirements.txt
+COPY docker/requirements.txt /opt/requirements.txt
 RUN pip3 install -r /opt/requirements.txt \
  && rm -rf /root/.cache/pip
 
-RUN mkdir /root/.ssh
-
 COPY bin /opt
 COPY data /opt/data
-COPY utils.py /opt
 
 RUN chmod -R +x /opt
 
