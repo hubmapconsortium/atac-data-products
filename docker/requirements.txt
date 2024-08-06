@@ -1,4 +1,4 @@
-anndata~=0.7.6
+anndata
 awswrangler
 leidenalg~=0.8.0
 manhole
