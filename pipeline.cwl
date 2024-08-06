@@ -22,6 +22,7 @@ inputs:
 
 outputs:
     mudata_file:
+        type: File
         outputSource: concatenate/mudata_file
 
 steps:
