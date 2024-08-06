@@ -22,7 +22,12 @@ inputs:
 
 outputs:
     mudata_file:
+        type: File
         outputSource: concatenate/mudata_file
+    
+    metadata_json:
+        type: File
+        outputSource: concatenate/metadata_json
 
 steps:
 
@@ -37,5 +42,6 @@ steps:
     
       out:
         - mudata_file
+        - metadata_json
       run: steps/concatenate.cwl
       label: "Concatenates h5ad files in directory"
