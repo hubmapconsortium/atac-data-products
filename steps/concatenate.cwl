@@ -32,3 +32,9 @@ outputs:
         outputBinding:
             glob: "*.h5mu"
         doc: h5mu with concatenated cell by bin and cell by gene matrices
+    
+    metadata_json:
+        type: File
+        outputBinding: 
+            glob: "*.json"
+        doc: json containing data product info

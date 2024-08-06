@@ -198,7 +198,7 @@ def main(data_directory: Path, uuids_file: Path, tissue: str = None):
     cbb_concat.uns["datasets"] = cbg_concat.uns["datasets"] = hbmids_list
     data_product_uuid = str(uuid.uuid4())
     cbb_concat.uns["uuid"] = cbg_concat.uns["uuid"] = data_product_uuid
-    total_cell_count = cbb_concat.obs.shape[0]
+    total_cell_count = cbb_concat.obs.shape[1]
     mdata = make_mudata(cbb_concat, cbg_concat)
     mdata.write(f"{output_file_name}.h5mu")
     create_json(tissue, data_product_uuid, creation_time, uuids_list, hbmids_list, total_cell_count)
