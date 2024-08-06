@@ -168,12 +168,12 @@ def main(data_directory: Path, uuids_file: Path, tissue: str = None):
     file_pairs = [find_file_pairs(directory) for directory in directories if len(listdir(directory))>1]
     print("Annotating objects")
     cell_by_bin_adatas = [
-        annotate_h5ads(file_pair[0], file_pair[1], tissue, uuids_df)
+        annotate_h5ads(file_pair[0], tissue, uuids_df)
         for file_pair in file_pairs
     ]
 
     cell_by_gene_adatas = [     
-        annotate_h5ads(file_pair[0], file_pair[1], tissue, uuids_df)
+        annotate_h5ads(file_pair[1], tissue, uuids_df)
         for file_pair in file_pairs
     ]
     saved_var = cell_by_gene_adatas[0].var
