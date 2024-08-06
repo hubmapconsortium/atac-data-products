@@ -176,7 +176,6 @@ def main(data_directory: Path, uuids_file: Path, tissue: str = None):
         annotate_h5ads(file_pair[1], tissue, uuids_df)
         for file_pair in file_pairs
     ]
-    saved_var = cell_by_gene_adatas[0].var
     print("Concatenating objects")
     cbb_concat = anndata.concat(cell_by_bin_adatas, join="outer")
     cbg_concat = anndata.concat(cell_by_gene_adatas, join="outer")
@@ -185,7 +184,6 @@ def main(data_directory: Path, uuids_file: Path, tissue: str = None):
     cbb_concat.uns["datasets"] = cbg_concat.uns["datasets"] = hbmids_list
     data_product_uuid = str(uuid.uuid4())
     cbb_concat.uns["uuid"] = cbg_concat.uns["uuid"] = data_product_uuid
-    cbb_concat.var = cbg_concat.var = saved_var
     total_cell_count = cbb_concat.obs.shape[0]
     mdata = make_mudata(cbb_concat, cbg_concat)
     mdata.write(f"{output_file_name}.h5mu")
