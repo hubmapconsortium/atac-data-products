@@ -28,7 +28,7 @@ inputs:
 
 outputs:
     mudata_file:
-        type: File []
+        type: File
         outputBinding:
             glob: "*.h5mu"
         doc: h5mu with concatenated cell by bin and cell by gene matrices
