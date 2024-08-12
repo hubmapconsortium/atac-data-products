@@ -71,28 +71,10 @@ def annotate_h5ads(
     data_set_dir = fspath(adata_file.parent.stem)
     # And the tissue type
     tissue_type = tissue_type if tissue_type else get_tissue_type(data_set_dir)
-    hubmap_id = uuids_df.loc[uuids_df["uuid"] == data_set_dir, "hubmap_id"].values[0]
-    age = uuids_df.loc[uuids_df["uuid"] == data_set_dir, "age"].values[0]
-    sex = uuids_df.loc[uuids_df["uuid"] == data_set_dir, "sex"].values[0]
-    height = uuids_df.loc[uuids_df["uuid"] == data_set_dir, "height"].values[0]
-    weight = uuids_df.loc[uuids_df["uuid"] == data_set_dir, "weight"].values[0]
-    bmi = uuids_df.loc[uuids_df["uuid"] == data_set_dir, "bmi"].values[0]
-    cause_of_death = uuids_df.loc[uuids_df["uuid"] == data_set_dir, "cause_of_death"].values[0]
-    race = uuids_df.loc[uuids_df["uuid"] == data_set_dir, "race"].values[0]
     adata = anndata.read_h5ad(adata_file)
     adata_copy = adata.copy()
     adata_copy.obs["barcode"] = adata.obs.index
     adata_copy.obs["dataset"] = data_set_dir
-    adata_copy.obs["hubmap_id"] = hubmap_id
-    adata_copy.obs["organ"] = tissue_type
-    adata_copy.obs["modality"] = "atac"
-    adata_copy.obs["age"] = age
-    adata_copy.obs["sex"] = sex
-    adata_copy.obs["height"] = height
-    adata_copy.obs["weight"] = weight
-    adata_copy.obs["bmi"] = bmi
-    adata_copy.obs["cause_of_death"] = cause_of_death
-    adata_copy.obs["race"] = race
     
     cell_ids_list = [
         "-".join([data_set_dir, barcode]) for barcode in adata_copy.obs["barcode"]
@@ -168,7 +150,10 @@ def make_mudata(cell_by_bin, cell_by_gene):
 
 
 def annotate_mudata(mdata, uuids_df):
-    pass
+    merged = uuids_df.merge(mdata.obs, left_on="uuid", right_on="dataset", how="inner")
+    merged = merged.set_index(mdata.obs.index)
+    merged = merged.drop(columns=["Unnamed: 0"])
+    return merged
 
 
 
@@ -200,6 +185,7 @@ def main(data_directory: Path, uuids_file: Path, tissue: str = None):
     cbb_concat.uns["uuid"] = cbg_concat.uns["uuid"] = data_product_uuid
     total_cell_count = cbb_concat.obs.shape[1]
     mdata = make_mudata(cbb_concat, cbg_concat)
+    mdata.obs = annotate_mudata(mdata, uuids_df)
     mdata.write(f"{output_file_name}.h5mu")
     create_json(tissue, data_product_uuid, creation_time, uuids_list, hbmids_list, total_cell_count)
 
