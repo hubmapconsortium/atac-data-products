@@ -179,13 +179,14 @@ def main(data_directory: Path, uuids_file: Path, tissue: str = None):
     cbb_concat = anndata.concat(cell_by_bin_adatas, join="outer")
     cbg_concat = anndata.concat(cell_by_gene_adatas, join="outer")
     creation_time = str(datetime.now())
-    cbb_concat.uns["creation_date_time"] = cbg_concat.uns["creation_date_time"] = creation_time
-    cbb_concat.uns["datasets"] = cbg_concat.uns["datasets"] = hbmids_list
     data_product_uuid = str(uuid.uuid4())
-    cbb_concat.uns["uuid"] = cbg_concat.uns["uuid"] = data_product_uuid
     total_cell_count = cbb_concat.obs.shape[1]
     mdata = make_mudata(cbb_concat, cbg_concat)
+    mdata.obs = cbb_concat.obs
     mdata.obs = annotate_mudata(mdata, uuids_df)
+    mdata.uns["creation_data_time"] = creation_time
+    mdata.uns["datasets"] = hbmids_list
+    mdata.uns["uuid"] = data_product_uuid
     mdata.write(f"{output_file_name}.h5mu")
     create_json(tissue, data_product_uuid, creation_time, uuids_list, hbmids_list, total_cell_count)
 
