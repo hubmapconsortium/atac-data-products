@@ -153,6 +153,7 @@ def annotate_mudata(mdata, uuids_df):
     merged = uuids_df.merge(mdata.obs, left_on="uuid", right_on="dataset", how="inner")
     merged = merged.set_index(mdata.obs.index)
     merged = merged.drop(columns=["Unnamed: 0"])
+    merged = merged.fillna(np.nan)
     return merged
 
 
