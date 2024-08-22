@@ -131,8 +131,8 @@ def create_json(tissue, data_product_uuid, creation_time, uuids, hbmids, cell_co
     metadata = {
         "Data Product UUID": data_product_uuid,
         "Tissue": convert_tissue_code(tissue),
-        "Raw URL": bucket_url + f"{tissue}_raw.h5ad",
-        "Processed URL": bucket_url + f"{tissue}_processed.h5ad",
+        "Assay": "atac",
+        "URL": bucket_url + f"{tissue}.h5ad",
         "Creation Time": creation_time,
         "Dataset UUIDs": uuids,
         "Dataset HBMIDs": hbmids,
@@ -154,6 +154,7 @@ def annotate_mudata(mdata, uuids_df):
     merged = merged.set_index(mdata.obs.index)
     merged = merged.drop(columns=["Unnamed: 0"])
     merged = merged.fillna(np.nan)
+    merged["age"] = pd.to_numeric(merged["age"])
     return merged
 
 
