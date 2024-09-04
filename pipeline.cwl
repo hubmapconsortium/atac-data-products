@@ -54,19 +54,19 @@ steps:
       run: steps/concatenate.cwl
       label: "Concatenates h5ad files in directory"
 
-  - id: upload
-    in:
-      - id: mudata_file
-        source: concatenate/mudata_file
-      - id: metadata_json
-        source: concatenate/metadata_json
-      - id: access_key_id
-        source: access_key_id
-      - id: secret_access_key
-        source: secret_access_key
+    - id: upload
+      in: 
+        - id: mudata_file
+          source: concatenate/mudata_file
+        - id: metadata_json
+          source: concatenate/metadata_json
+        - id: access_key_id
+          source: access_key_id
+        - id: secret_access_key
+          source: secret_access_key
     
-    out:
-      - finished_text
-    
-    run: steps/upload.cwl
-    label: "Uploads the pipeline outputs to s3"
+      out:
+        - finished_text
+      run: steps/upload.cwl
+      label: "Uploads the pipeline outputs to s3"
+      
