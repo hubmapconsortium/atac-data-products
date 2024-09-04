@@ -59,7 +59,7 @@ steps:
       - id: mudata_file
         source: concatenate/mudata_file
       - id: metadata_json
-        source: concatenate/final_data_product_metadata
+        source: concatenate/metadata_json
       - id: access_key_id
         source: access_key_id
       - id: secret_access_key
