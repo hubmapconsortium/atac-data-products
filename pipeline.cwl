@@ -24,7 +24,7 @@ inputs:
         label: "AWS access key id"
         type: string
     
-    secret_access_key
+    secret_access_key:
         label: "AWS secret access key"
         type: string
 
