@@ -132,7 +132,7 @@ def create_json(tissue, data_product_uuid, creation_time, uuids, hbmids, cell_co
         "Data Product UUID": data_product_uuid,
         "Tissue": convert_tissue_code(tissue),
         "Assay": "atac",
-        "URL": bucket_url + f"{tissue}.h5ad",
+        "URL": bucket_url + f"{tissue}.h5mu",
         "Creation Time": creation_time,
         "Dataset UUIDs": uuids,
         "Dataset HBMIDs": hbmids,
