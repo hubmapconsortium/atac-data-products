@@ -127,7 +127,7 @@ def map_gene_ids(adata):
     return adata
 
 
-def create_json(tissue, data_product_uuid, creation_time, uuids, hbmids, cell_count):
+def create_json(tissue, data_product_uuid, creation_time, uuids, hbmids, cell_count, file_size):
     bucket_url = f"https://hubmap-data-products.s3.amazonaws.com/{data_product_uuid}/"
     metadata = {
         "Data Product UUID": data_product_uuid,
@@ -137,7 +137,8 @@ def create_json(tissue, data_product_uuid, creation_time, uuids, hbmids, cell_co
         "Creation Time": creation_time,
         "Dataset UUIDs": uuids,
         "Dataset HBMIDs": hbmids,
-        "Total Cell Count": cell_count
+        "Total Cell Count": cell_count,
+        "Raw File Size": file_size
     }
     print("Writing metadata json")
     with open(f"{data_product_uuid}.json", "w") as outfile:
@@ -192,8 +193,7 @@ def main(data_directory: Path, uuids_file: Path, tissue: str = None):
     mdata.uns["uuid"] = data_product_uuid
     mdata.write(f"{output_file_name}.h5mu")
     file_size = os.path.getsize(f"{output_file_name}.h5mu")
-    print(file_size)
-    create_json(tissue, data_product_uuid, creation_time, uuids_list, hbmids_list, total_cell_count)
+    create_json(tissue, data_product_uuid, creation_time, uuids_list, hbmids_list, total_cell_count, file_size)
 
 
 if __name__ == "__main__":
