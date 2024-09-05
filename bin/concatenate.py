@@ -11,6 +11,7 @@ from typing import Dict, Tuple
 import anndata
 import muon as mu
 import numpy as np
+import os
 import pandas as pd
 import requests
 import scipy.sparse
@@ -126,17 +127,18 @@ def map_gene_ids(adata):
     return adata
 
 
-def create_json(tissue, data_product_uuid, creation_time, uuids, hbmids, cell_count):
+def create_json(tissue, data_product_uuid, creation_time, uuids, hbmids, cell_count, file_size):
     bucket_url = f"https://hubmap-data-products.s3.amazonaws.com/{data_product_uuid}/"
     metadata = {
         "Data Product UUID": data_product_uuid,
         "Tissue": convert_tissue_code(tissue),
         "Assay": "atac",
-        "URL": bucket_url + f"{tissue}.h5ad",
+        "URL": bucket_url + f"{tissue}.h5mu",
         "Creation Time": creation_time,
         "Dataset UUIDs": uuids,
         "Dataset HBMIDs": hbmids,
-        "Total Cell Count": cell_count
+        "Total Cell Count": cell_count,
+        "Raw File Size": file_size
     }
     print("Writing metadata json")
     with open(f"{data_product_uuid}.json", "w") as outfile:
@@ -190,7 +192,8 @@ def main(data_directory: Path, uuids_file: Path, tissue: str = None):
     mdata.uns["datasets"] = hbmids_list
     mdata.uns["uuid"] = data_product_uuid
     mdata.write(f"{output_file_name}.h5mu")
-    create_json(tissue, data_product_uuid, creation_time, uuids_list, hbmids_list, total_cell_count)
+    file_size = os.path.getsize(f"{output_file_name}.h5mu")
+    create_json(tissue, data_product_uuid, creation_time, uuids_list, hbmids_list, total_cell_count, file_size)
 
 
 if __name__ == "__main__":
