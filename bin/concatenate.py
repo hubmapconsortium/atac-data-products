@@ -11,6 +11,7 @@ from typing import Dict, Tuple
 import anndata
 import muon as mu
 import numpy as np
+import os
 import pandas as pd
 import requests
 import scipy.sparse
@@ -190,6 +191,8 @@ def main(data_directory: Path, uuids_file: Path, tissue: str = None):
     mdata.uns["datasets"] = hbmids_list
     mdata.uns["uuid"] = data_product_uuid
     mdata.write(f"{output_file_name}.h5mu")
+    file_size = os.path.getsize(f"{output_file_name}.h5mu")
+    print(file_size)
     create_json(tissue, data_product_uuid, creation_time, uuids_list, hbmids_list, total_cell_count)
 
 
