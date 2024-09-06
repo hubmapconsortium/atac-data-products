@@ -72,7 +72,8 @@ def annotate_h5ads(
     data_set_dir = fspath(adata_file.parent.stem)
     # And the tissue type
     tissue_type = tissue_type if tissue_type else get_tissue_type(data_set_dir)
-    adata = anndata.read_h5ad(adata_file)
+    dense_adata = anndata.read_h5ad(adata_file)
+    adata = make_new_anndata_object(dense_adata)
     adata_copy = adata.copy()
     adata_copy.obs["barcode"] = adata.obs.index
     adata_copy.obs["dataset"] = data_set_dir
@@ -159,6 +160,10 @@ def annotate_mudata(mdata, uuids_df):
     merged["age"] = pd.to_numeric(merged["age"])
     return merged
 
+
+def make_new_anndata_object(adata):
+    new_adata = anndata.AnnData(X=adata.X, obs=pd.DataFrame(index=adata.obs.index), var=adata.var)
+    return new_adata
 
 
 def main(data_directory: Path, uuids_file: Path, tissue: str = None):
