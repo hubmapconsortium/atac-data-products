@@ -184,7 +184,8 @@ def main(data_directory: Path, uuids_file: Path, tissue: str = None):
     cbg_concat = anndata.concat(cell_by_gene_adatas, join="outer")
     creation_time = str(datetime.now())
     data_product_uuid = str(uuid.uuid4())
-    total_cell_count = cbb_concat.obs.shape[1]
+    print("CBB shape: ", cbb_concat.obs.shape)
+    total_cell_count = cbb_concat.obs.shape[0]
     mdata = make_mudata(cbb_concat, cbg_concat)
     mdata.obs = cbb_concat.obs
     mdata.obs = annotate_mudata(mdata, uuids_df)
