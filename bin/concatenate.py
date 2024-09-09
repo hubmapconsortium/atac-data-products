@@ -149,7 +149,7 @@ def create_json(tissue, data_product_uuid, creation_time, uuids, hbmids, cell_co
 
 def make_mudata(cell_by_bin, cell_by_gene):
     mdata = mu.MuData({"atac_cell_by_bin": cell_by_bin, "atac_cell_by_gene": cell_by_gene})
-    mu.pp.intersect_obs
+    mu.pp.intersect_obs(mdata)
     return mdata
 
 
