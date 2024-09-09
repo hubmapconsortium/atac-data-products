@@ -110,7 +110,7 @@ def map_gene_ids(adata):
     obsm = adata.obsm
     uns = adata.uns
     gene_mapping = read_gene_mapping()
-    sparse_array = pd.arrays.SparseArray(data=adata.X, fill_value=0)
+    sparse_array = pd.arrays.SparseArray(data=adata.X.toarray())
     temp_df = pd.DataFrame(
         sparse_array, index=adata.obs.index, columns=adata.var.index
     )
