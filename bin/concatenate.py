@@ -110,10 +110,8 @@ def map_gene_ids(adata):
     obsm = adata.obsm
     uns = adata.uns
     gene_mapping = read_gene_mapping()
-    has_hugo_symbol = [gene in gene_mapping for gene in adata.var.index]
-    # adata = adata[:, has_hugo_symbol]
     temp_df = pd.DataFrame(
-        adata.X, index=adata.obs.index, columns=adata.var.index
+        pd.arrays.SparseArray(adata.X), index=adata.obs.index, columns=adata.var.index
     )
     aggregated = temp_df.groupby(level=0, axis=1).sum()
     adata = anndata.AnnData(aggregated, obs=adata.obs)
