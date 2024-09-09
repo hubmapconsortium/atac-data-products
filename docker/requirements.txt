@@ -3,7 +3,7 @@ awswrangler
 leidenalg~=0.8.0
 manhole
 numpy>=1.22
-pandas~=2.2.2
+pandas~=2.0.2
 pyyaml~=5.4
 requests~=2.22.0
 scanpy
