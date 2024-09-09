@@ -74,6 +74,7 @@ def annotate_h5ads(
     tissue_type = tissue_type if tissue_type else get_tissue_type(data_set_dir)
     dense_adata = anndata.read_h5ad(adata_file)
     adata = make_new_anndata_object(dense_adata)
+    del dense_adata
     adata_copy = adata.copy()
     adata_copy.obs["barcode"] = adata.obs.index
     adata_copy.obs["dataset"] = data_set_dir
