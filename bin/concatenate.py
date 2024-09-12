@@ -14,7 +14,6 @@ import numpy as np
 import os
 import pandas as pd
 import requests
-import scipy.sparse
 import uuid
 import yaml
 
