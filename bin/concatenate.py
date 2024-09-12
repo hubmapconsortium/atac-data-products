@@ -18,11 +18,6 @@ import scipy.sparse
 import uuid
 import yaml
 
-GENE_MAPPING_DIRECTORIES = [
-    Path(__file__).parent.parent / "data",
-    Path("/opt/data"),
-]
-
 
 def get_tissue_type(dataset: str) -> str:
     organ_dict = yaml.load(open("/opt/organ_types.yaml"), Loader=yaml.BaseLoader)
@@ -38,14 +33,6 @@ def convert_tissue_code(tissue_code):
         data = yaml.load(f, Loader=yaml.SafeLoader)
     tissue_name = data.get(tissue_code)['description']
     return tissue_name
-
-
-def get_inverted_gene_dict():
-    inverted_dict = defaultdict(list)
-    gene_mapping = read_gene_mapping()
-    for ensembl, hugo in gene_mapping.items():
-        inverted_dict[hugo].append(ensembl)
-    return inverted_dict
 
 
 def find_files(directory, patterns):
@@ -86,43 +73,7 @@ def annotate_h5ads(
         cell_ids_list, index=adata_copy.obs.index, dtype=str
     )
     adata_copy.obs.set_index("cell_id", drop=True, inplace=True)
-    adata_copy = map_gene_ids(adata_copy)
     return adata_copy
-
-
-def read_gene_mapping() -> Dict[str, str]:
-    """
-    Try to find the Ensembl to HUGO symbol mapping, with paths suitable
-    for running this script inside and outside a Docker container.
-    :return:
-    """
-    for directory in GENE_MAPPING_DIRECTORIES:
-        mapping_file = directory / "ensembl_to_symbol.json"
-        if mapping_file.is_file():
-            with open(mapping_file) as f:
-                return json.load(f)
-    message_pieces = ["Couldn't find Ensembl → HUGO mapping file. Tried:"]
-    message_pieces.extend(f"\t{path}" for path in GENE_MAPPING_DIRECTORIES)
-    raise ValueError("\n".join(message_pieces))
-
-
-def map_gene_ids(adata):
-    obsm = adata.obsm
-    uns = adata.uns
-    gene_mapping = read_gene_mapping()
-    temp_df = pd.DataFrame.sparse.from_spmatrix(adata.X, index=adata.obs.index, columns=adata.var.index)
-    aggregated = temp_df.groupby(level=0, axis=1).sum()
-    adata = anndata.AnnData(aggregated, obs=adata.obs)
-    adata.var["hugo_symbol"] = [
-        gene_mapping.get(var, np.nan) for var in adata.var.index
-    ]
-    adata.obsm = obsm
-    adata.uns = uns
-    # This introduces duplicate gene names, use Pandas for aggregation
-    # since anndata doesn't have that functionality
-    adata.X = scipy.sparse.csr_matrix(adata.X)
-    adata.var_names_make_unique()
-    return adata
 
 
 def create_json(tissue, data_product_uuid, creation_time, uuids, hbmids, cell_count, file_size):
