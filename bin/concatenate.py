@@ -62,8 +62,8 @@ def annotate_h5ads(
     adata = make_new_anndata_object(dense_adata)
     del dense_adata
     adata_copy = adata.copy()
-    adata_copy.obs["barcode"] = adata_copy.obs["barcode"].str.replace("BAM_data#", "", regex=False)
     adata_copy.obs["barcode"] = adata.obs.index
+    adata_copy.obs["barcode"] = adata_copy.obs["barcode"].str.replace("BAM_data#", "", regex=False)
     adata_copy.obs["dataset"] = data_set_dir
     
     cell_ids_list = [
