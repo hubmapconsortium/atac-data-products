@@ -23,8 +23,8 @@ def main(mudata_file, metadata_json, ssh_key):
 
 if __name__ == "__main__":
     p = ArgumentParser()
-    p.add_argument("data_product_metadata", type=Path)
-    p.add_argument("ssh_key", type=Path)
+    p.add_argument("--data_product_metadata", type=Path)
+    p.add_argument("--ssh_key", type=Path)
     args = p.parse_args()
 
     main(args.data_product_metadata, args.ssh_key)
