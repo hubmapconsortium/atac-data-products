@@ -13,7 +13,7 @@ def get_uuid(data_product_metadata):
 
 
 def upload_to_ec2(metadata_json, uuid, ssh_key):
-    os.system(f"scp -i {ssh_key} {metadata_json} main_user@ec2-44-213-71-141.compute-1.amazonaws.com:/opt/pipeline_outputs/{uuid}.json")
+    os.system(f"scp -i {ssh_key} {metadata_json} main_user@ec2-44-213-71-141.compute-1.amazonaws.com:/pipeline_outputs/{uuid}.json")
 
 
 def main(metadata_json, ssh_key):
