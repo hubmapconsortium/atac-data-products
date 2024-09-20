@@ -16,9 +16,9 @@ def upload_to_ec2(metadata_json, uuid, ssh_key):
     os.system(f"scp -i {ssh_key} {metadata_json} main_user@ec2-44-213-71-141.compute-1.amazonaws.com:/opt/pipeline_outputs/{uuid}.json")
 
 
-def main(mudata_file, metadata_json, ssh_key):
+def main(metadata_json, ssh_key):
     uuid = get_uuid(metadata_json)
-    upload_to_ec2(mudata_file, metadata_json, uuid, ssh_key)
+    upload_to_ec2(metadata_json, uuid, ssh_key)
 
 
 if __name__ == "__main__":
