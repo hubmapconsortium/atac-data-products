@@ -14,14 +14,8 @@ import numpy as np
 import os
 import pandas as pd
 import requests
-import scipy.sparse
 import uuid
 import yaml
-
-GENE_MAPPING_DIRECTORIES = [
-    Path(__file__).parent.parent / "data",
-    Path("/opt/data"),
-]
 
 
 def get_tissue_type(dataset: str) -> str:
@@ -38,14 +32,6 @@ def convert_tissue_code(tissue_code):
         data = yaml.load(f, Loader=yaml.SafeLoader)
     tissue_name = data.get(tissue_code)['description']
     return tissue_name
-
-
-def get_inverted_gene_dict():
-    inverted_dict = defaultdict(list)
-    gene_mapping = read_gene_mapping()
-    for ensembl, hugo in gene_mapping.items():
-        inverted_dict[hugo].append(ensembl)
-    return inverted_dict
 
 
 def find_files(directory, patterns):
@@ -72,9 +58,12 @@ def annotate_h5ads(
     data_set_dir = fspath(adata_file.parent.stem)
     # And the tissue type
     tissue_type = tissue_type if tissue_type else get_tissue_type(data_set_dir)
-    adata = anndata.read_h5ad(adata_file)
+    dense_adata = anndata.read_h5ad(adata_file)
+    adata = make_new_anndata_object(dense_adata)
+    del dense_adata
     adata_copy = adata.copy()
     adata_copy.obs["barcode"] = adata.obs.index
+    adata_copy.obs["barcode"] = adata_copy.obs["barcode"].str.replace("BAM_data#", "", regex=False)
     adata_copy.obs["dataset"] = data_set_dir
     
     cell_ids_list = [
@@ -84,47 +73,7 @@ def annotate_h5ads(
         cell_ids_list, index=adata_copy.obs.index, dtype=str
     )
     adata_copy.obs.set_index("cell_id", drop=True, inplace=True)
-    adata_copy = map_gene_ids(adata_copy)
     return adata_copy
-
-
-def read_gene_mapping() -> Dict[str, str]:
-    """
-    Try to find the Ensembl to HUGO symbol mapping, with paths suitable
-    for running this script inside and outside a Docker container.
-    :return:
-    """
-    for directory in GENE_MAPPING_DIRECTORIES:
-        mapping_file = directory / "ensembl_to_symbol.json"
-        if mapping_file.is_file():
-            with open(mapping_file) as f:
-                return json.load(f)
-    message_pieces = ["Couldn't find Ensembl → HUGO mapping file. Tried:"]
-    message_pieces.extend(f"\t{path}" for path in GENE_MAPPING_DIRECTORIES)
-    raise ValueError("\n".join(message_pieces))
-
-
-def map_gene_ids(adata):
-    obsm = adata.obsm
-    uns = adata.uns
-    gene_mapping = read_gene_mapping()
-    has_hugo_symbol = [gene in gene_mapping for gene in adata.var.index]
-    # adata = adata[:, has_hugo_symbol]
-    temp_df = pd.DataFrame(
-        adata.X.todense(), index=adata.obs.index, columns=adata.var.index
-    )
-    aggregated = temp_df.groupby(level=0, axis=1).sum()
-    adata = anndata.AnnData(aggregated, obs=adata.obs)
-    adata.var["hugo_symbol"] = [
-        gene_mapping.get(var, np.nan) for var in adata.var.index
-    ]
-    adata.obsm = obsm
-    adata.uns = uns
-    # This introduces duplicate gene names, use Pandas for aggregation
-    # since anndata doesn't have that functionality
-    adata.X = scipy.sparse.csr_matrix(adata.X)
-    adata.var_names_make_unique()
-    return adata
 
 
 def create_json(tissue, data_product_uuid, creation_time, uuids, hbmids, cell_count, file_size):
@@ -147,7 +96,7 @@ def create_json(tissue, data_product_uuid, creation_time, uuids, hbmids, cell_co
 
 def make_mudata(cell_by_bin, cell_by_gene):
     mdata = mu.MuData({"atac_cell_by_bin": cell_by_bin, "atac_cell_by_gene": cell_by_gene})
-    mu.pp.intersect_obs
+    mu.pp.intersect_obs(mdata)
     return mdata
 
 
@@ -159,6 +108,10 @@ def annotate_mudata(mdata, uuids_df):
     merged["age"] = pd.to_numeric(merged["age"])
     return merged
 
+
+def make_new_anndata_object(adata):
+    new_adata = anndata.AnnData(X=adata.X, obs=pd.DataFrame(index=adata.obs.index), var=adata.var)
+    return new_adata
 
 
 def main(data_directory: Path, uuids_file: Path, tissue: str = None):
@@ -184,7 +137,8 @@ def main(data_directory: Path, uuids_file: Path, tissue: str = None):
     cbg_concat = anndata.concat(cell_by_gene_adatas, join="outer")
     creation_time = str(datetime.now())
     data_product_uuid = str(uuid.uuid4())
-    total_cell_count = cbb_concat.obs.shape[1]
+    print("CBB shape: ", cbb_concat.obs.shape)
+    total_cell_count = cbb_concat.obs.shape[0]
     mdata = make_mudata(cbb_concat, cbg_concat)
     mdata.obs = cbb_concat.obs
     mdata.obs = annotate_mudata(mdata, uuids_df)
