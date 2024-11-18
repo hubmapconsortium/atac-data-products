@@ -10,6 +10,7 @@ from typing import Dict, Tuple
 
 import anndata
 import muon as mu
+import mudata as md
 import numpy as np
 import os
 import pandas as pd
@@ -65,6 +66,7 @@ def annotate_h5ads(
     adata_copy.obs["barcode"] = adata.obs.index
     adata_copy.obs["barcode"] = adata_copy.obs["barcode"].str.replace("BAM_data#", "", regex=False)
     adata_copy.obs["dataset"] = data_set_dir
+    adata_copy.obs["tissue"] = tissue_type
     
     cell_ids_list = [
         "-".join([data_set_dir, barcode]) for barcode in adata_copy.obs["barcode"]
