@@ -48,10 +48,14 @@ def main(data_directory: Path, uuids_file: Path, tissue: str):
     uuids = pd.read_csv(uuids_file, sep="\t")["uuid"]
     uuids = uuids.dropna()
     h5ads_base_directory = Path(f"{tissue}_h5ads")
-    h5ads_base_directory.mkdir(exist_ok=True)  # Create h5ads directory if it doesn't exist
+    h5ads_base_directory.mkdir(
+        exist_ok=True
+    )  # Create h5ads directory if it doesn't exist
     for uuid in uuids:
         h5ads_directory = h5ads_base_directory / uuid
-        h5ads_directory.mkdir(parents=True, exist_ok=True)  # Create UUID-specific directory
+        h5ads_directory.mkdir(
+            parents=True, exist_ok=True
+        )  # Create UUID-specific directory
         input_directory = get_input_directory(data_directory, uuid)
         
         # Check for QC file presence
@@ -63,12 +67,11 @@ def main(data_directory: Path, uuids_file: Path, tissue: str):
         if input_files == (None, None):
             print("No input files in: ", input_directory)
             continue
-        
         print("Input directory:", input_directory)
         print("Input files:", input_files)
         for input_file in input_files:
             check_call(
-                f"cp {fspath(input_file)} {h5ads_directory}/{input_file.name}",
+                f"cp '{input_file}' '{h5ads_directory}/{input_file.name}'",
                 shell=True,
             )
 
