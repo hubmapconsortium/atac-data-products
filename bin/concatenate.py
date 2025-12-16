@@ -79,7 +79,7 @@ def annotate_h5ads(
 
 
 def create_json(tissue, data_product_uuid, creation_time, uuids, hbmids, cell_count, file_size):
-    bucket_url = f"https://hubmap-data-products.s3.amazonaws.com/{data_product_uuid}/"
+    bucket_url = f"https://assets.hubmapconsortium.org/hubmap-data-products/{data_product_uuid}/"
     metadata = {
         "Data Product UUID": data_product_uuid,
         "Tissue": convert_tissue_code(tissue),
