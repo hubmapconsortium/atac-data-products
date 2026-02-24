@@ -1,0 +1,33 @@
+FROM lux563624348/shinycell2
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install system dependencies for RStudio Server
+RUN apt-get update && apt-get install -y \    
+    gdebi-core wget supervisor sudo psmisc libclang-dev \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+
+# -------------------------
+# Install RStudio Server
+# -------------------------
+# Install RStudio Server (updated link for 2025.05.1+513)
+RUN wget https://download2.rstudio.org/server/jammy/amd64/rstudio-server-2025.05.1-513-amd64.deb \
+    && gdebi -n rstudio-server-2025.05.1-513-amd64.deb \
+    && rm rstudio-server-2025.05.1-513-amd64.deb
+
+
+RUN useradd -m rstudio && echo "rstudio:rstudio" | chpasswd && adduser rstudio sudo
+
+# -------------------------
+# Supervisor to run Shiny + RStudio
+# -------------------------
+RUN mkdir -p /var/log/supervisor
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Expose Shiny and RStudio ports
+EXPOSE 3838 8787
+
+# Supervisor will launch shiny-server + rstudio-server at container start
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+
