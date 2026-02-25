@@ -21,11 +21,6 @@ files=(
 #/data/a0d5b879-18ff-4d1e-8061-52b01d63e659/TH_raw.h5mu  #Found modalities: ['a0d5b879-18ff-4d1e-8061-52b01d63e659_raw']
 )
 
-for f in "${files[@]}"; do
-    echo "Running: $f"
-    #python check_h5mu_bins.py --h5mu "$f"
-done
-
 
 if ((${#files[@]})); then
   printf '%s\0' "${files[@]}" | xargs -0 ls -lhSr
