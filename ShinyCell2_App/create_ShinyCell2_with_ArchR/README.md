@@ -21,13 +21,21 @@ It allows researchers to deploy interactive single-cell visualization dashboards
 
 ## 🐳 Docker Image
 
-- **Docker Hub:** [lux563624348/shinycell2](https://hub.docker.com/r/lux563624348/shinycell2)
+This Dockfile now uses a locally built base image tagged `shinycell2-local` instead of pulling from Docker Hub.
+You can still reference the original image from Docker Hub if you prefer.
 
 ---
 
 ## 🚀 Usage
 
-### 1. Build Docker image
+### 1. Build the local base image
 
 ```bash
-docker build -t shinycell2 -f Dockerfile .
+docker build -t shinycell2-local -f ShinyCell2_App/docker/shinycell2/Dockerfile ShinyCell2_App/docker/shinycell2
+```
+
+### 2. Build this image (ArchR + RStudio)
+
+```bash
+docker build -t shinycell2-archr -f ShinyCell2_App/create_ShinyCell2_with_ArchR/Dockfile ShinyCell2_App/create_ShinyCell2_with_ArchR
+```

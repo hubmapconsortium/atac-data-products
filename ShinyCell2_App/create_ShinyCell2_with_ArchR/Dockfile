@@ -1,4 +1,4 @@
-FROM lux563624348/shinycell2
+FROM shinycell2-local
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -30,4 +30,3 @@ EXPOSE 3838 8787
 
 # Supervisor will launch shiny-server + rstudio-server at container start
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
-
